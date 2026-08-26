@@ -17,7 +17,8 @@ BarWidget {
 
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
   readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
-  readonly property color widgetForeground: bar ? bar.barForeground : Color.foreground
+  // Match Omarchy's symbolic tray icons so the badge follows every bar theme.
+  readonly property color widgetForeground: bar ? bar.foreground : Color.foreground
   readonly property color badgeColor: active ? "#8fcf76" : (detected ? widgetForeground : Qt.darker(widgetForeground, 1.65))
 
   function open() { if (panelLoader.item) panelLoader.item.open() }
@@ -98,14 +99,20 @@ BarWidget {
     }
   }
 
-  WidgetButton {
+  BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    text: "Y"
-    foreground: root.badgeColor
-    fontSize: Style.font.subtitle
-    tooltipText: "Yamaha MG-XU: " + (root.active ? "compatibility on" : (root.detected ? "compatibility off" : "not detected"))
+    iconComponent: Component {
+      YamahaIcon {
+        anchors.centerIn: parent
+        iconSize: Style.space(12)
+        color: root.badgeColor
+      }
+    }
+    tooltipText: root.active
+      ? "Yamaha MG-XU: compatibility on"
+      : (root.detected ? "Turn on if your MG-XU loses sound after a few seconds" : "Yamaha MG-XU: not detected")
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) root.setCompatibility(!root.active)
       else root.toggle()

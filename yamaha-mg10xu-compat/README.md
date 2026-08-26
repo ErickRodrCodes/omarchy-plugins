@@ -1,6 +1,6 @@
 # Yamaha MG-XU Compatibility
 
-An Omarchy bar widget by Erick Rodriguez for diagnosing and working around a Yamaha MG10XU/MG-XU USB-audio issue: playback remains logically active but becomes silent unless the capture side is also open.
+An Omarchy bar widget by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that lose playback sound after a few seconds. Turn the compatibility layer on when playback starts normally and then becomes silent even though PipeWire still shows it as active.
 
 The workaround runs a user-level service that reads the Yamaha capture source and sends every sample to `/dev/null`. Nothing is recorded, retained, or transmitted.
 
@@ -32,7 +32,7 @@ The plugin runs unsandboxed with your user permissions. It uses no root privileg
 
 ## Usage
 
-Click the Yamaha badge to open the panel, then use the switch to turn the compatibility layer on or off. Press `T` or Enter to toggle, `R` to refresh, and Escape to close. You can also use:
+If your MG-XU mixer loses sound after a few seconds, click the Yamaha badge and turn the compatibility layer on. Turn it off when the workaround is not needed. Press `T` or Enter to toggle, `R` to refresh, and Escape to close. You can also use:
 
 ```bash
 scripts/status.sh

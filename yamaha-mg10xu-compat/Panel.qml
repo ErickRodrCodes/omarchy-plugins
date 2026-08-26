@@ -57,12 +57,9 @@ Panel {
           meta: root.active ? "Compatibility layer active" : (root.detected ? "Compatibility layer off" : "Mixer not detected")
           foreground: root.foreground
           iconComponent: Component {
-            Text {
-              text: "Y"
+            YamahaIcon {
+              iconSize: Style.font.display
               color: root.active ? "#8fcf76" : root.dim
-              font.family: root.bar ? root.bar.fontFamily : Style.font.family
-              font.pixelSize: Style.font.display
-              font.bold: true
             }
           }
           trailingControl: Component {
@@ -87,7 +84,7 @@ Panel {
 
         Text {
           width: parent.width
-          text: "When enabled, a user service reads the MG-XU capture source and discards it to /dev/null. No audio is saved or transmitted."
+          text: "Turn this on if your MG-XU mixer loses playback sound after a few seconds. The user service keeps its capture side active and discards samples to /dev/null. No audio is saved or transmitted."
           color: root.dim
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.bodySmall
