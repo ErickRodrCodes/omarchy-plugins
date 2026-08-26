@@ -19,7 +19,7 @@ BarWidget {
   readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
   // Match Omarchy's symbolic tray icons so the badge follows every bar theme.
   readonly property color widgetForeground: bar ? bar.foreground : Color.foreground
-  readonly property color badgeColor: active ? "#8fcf76" : (detected ? widgetForeground : Qt.darker(widgetForeground, 1.65))
+  readonly property color badgeColor: active ? widgetForeground : Qt.darker(widgetForeground, 1.55)
 
   function open() { if (panelLoader.item) panelLoader.item.open() }
   function close() { if (panelLoader.item) panelLoader.item.close() }
@@ -108,6 +108,7 @@ BarWidget {
         anchors.centerIn: parent
         iconSize: Style.space(12)
         color: root.badgeColor
+        opacity: root.active ? 1.0 : 0.6
       }
     }
     tooltipText: root.active

@@ -56,10 +56,11 @@ Panel {
           title: "Yamaha MG-XU"
           meta: root.active ? "Compatibility layer active" : (root.detected ? "Compatibility layer off" : "Mixer not detected")
           foreground: root.foreground
+          iconOpacity: root.active ? 1.0 : 0.5
           iconComponent: Component {
             YamahaIcon {
               iconSize: Style.font.display
-              color: root.active ? "#8fcf76" : root.dim
+              color: root.active ? root.foreground : root.dim
             }
           }
           trailingControl: Component {
