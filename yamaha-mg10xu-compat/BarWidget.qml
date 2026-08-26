@@ -14,6 +14,8 @@ BarWidget {
   property bool active: false
   property bool busy: false
   property string message: "Checking Yamaha MG-XU…"
+  property string activityLog: "Loading activity…"
+  property bool activityBusy: false
 
   readonly property bool opened: panelLoader.item ? panelLoader.item.opened === true : false
   readonly property bool popoutSwitchClosing: panelLoader.item ? panelLoader.item.popoutSwitchClosing === true : false
@@ -60,6 +62,13 @@ BarWidget {
     actionProcess.running = true
   }
 
+  function refreshActivity() {
+    if (activityProcess.running) return
+    activityBusy = true
+    activityProcess.command = [pluginDir + "/scripts/activity-log.sh", "60"]
+    activityProcess.running = true
+  }
+
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
   onBarChanged: injectPanel()
@@ -82,10 +91,29 @@ BarWidget {
     id: actionProcess
     command: []
     stdout: StdioCollector { waitForEnd: true; onStreamFinished: root.message = String(text).trim() }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: if (String(text).trim() !== "") root.message = String(text).trim()
+    }
     onExited: function(exitCode) {
       root.busy = false
       root.refresh()
     }
+  }
+
+
+  Process {
+    id: activityProcess
+    command: []
+    stdout: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: root.activityLog = String(text).trim()
+    }
+    stderr: StdioCollector {
+      waitForEnd: true
+      onStreamFinished: if (String(text).trim() !== "") root.activityLog = String(text).trim()
+    }
+    onExited: root.activityBusy = false
   }
 
   Loader {

@@ -4,7 +4,7 @@ An Omarchy bar widget by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that los
 
 The workaround runs a user-level service that reads the Yamaha capture source and sends every sample to `/dev/null`. Nothing is recorded, retained, or transmitted.
 
-The Yamaha badge follows the active Omarchy theme: normal foreground means the compatibility layer is active, while the standard dimmed treatment means it is off. Left-click opens the panel; right-click toggles the layer directly.
+The Yamaha badge follows the active Omarchy theme: normal foreground means the compatibility layer is active, while the standard dimmed treatment means it is off. Left-click opens the panel; right-click toggles the layer directly. The panel's Activity log subpanel shows recent service starts, stops, restarts, and errors from the systemd user journal.
 
 ## Install
 
@@ -49,6 +49,7 @@ If your MG-XU mixer loses sound after a few seconds, click the Yamaha badge and 
 
 ```bash
 scripts/status.sh
+scripts/activity-log.sh
 scripts/install.sh --dry-run
 scripts/install.sh
 scripts/uninstall.sh --dry-run
