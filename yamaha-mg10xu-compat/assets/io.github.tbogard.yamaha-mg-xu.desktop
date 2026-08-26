@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Yamaha MG-XU Compatibility
+Comment=Manage the Yamaha MG-XU audio compatibility layer
+Exec=omarchy-shell shell toggle io.github.tbogard.yamaha-mg-xu
+Icon=io.github.tbogard.yamaha-mg-xu
+Terminal=false
+Categories=AudioVideo;Audio;
+Keywords=Yamaha;MG10XU;MG-XU;Audio;PipeWire;
+StartupNotify=false
+X-Yamaha-MGXU-Managed=true

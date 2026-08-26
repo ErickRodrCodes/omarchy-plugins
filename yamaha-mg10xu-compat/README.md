@@ -1,6 +1,6 @@
 # Yamaha MG-XU Compatibility
 
-An Omarchy bar widget by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that lose playback sound after a few seconds. Turn the compatibility layer on when playback starts normally and then becomes silent even though PipeWire still shows it as active.
+An Omarchy bar widget and launcher app by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that lose playback sound after a few seconds. Turn the compatibility layer on when playback starts normally and then becomes silent even though PipeWire still shows it as active.
 
 The workaround runs a user-level service that reads the Yamaha capture source and sends every sample to `/dev/null`. Nothing is recorded, retained, or transmitted.
 
@@ -14,13 +14,17 @@ From a checkout of this collection:
 mkdir -p ~/.config/omarchy/plugins
 cp -a yamaha-mg10xu-compat ~/.config/omarchy/plugins/io.github.tbogard.yamaha-mg-xu
 omarchy plugin enable io.github.tbogard.yamaha-mg-xu right
+yamaha-mg10xu-compat/scripts/install-app.sh
 ```
 
 For a standalone repository containing this directory at its root:
 
 ```bash
 omarchy plugin add https://github.com/tbogard/yamaha-mg10xu-compat.git --enable
+~/.config/omarchy/plugins/io.github.tbogard.yamaha-mg-xu/scripts/install-app.sh
 ```
+
+The launcher appears as **Yamaha MG-XU Compatibility** in the application menu. It opens an Omarchy overlay inside the existing shell process; it does not launch a second Quickshell instance.
 
 ## Requirements
 
@@ -35,6 +39,7 @@ The plugin runs with your user permissions. It uses no root privileges and depen
 - Never runs `sudo`, `pkexec`, a second Quickshell process, or remote code.
 - Never edits packaged files under `/usr/share/omarchy`.
 - Writes only its exact systemd user-unit path and refuses path-like unit names.
+- The optional app installer writes only `~/.local/share/applications/io.github.tbogard.yamaha-mg-xu.desktop` and `~/.local/share/icons/hicolor/scalable/apps/io.github.tbogard.yamaha-mg-xu.svg`; it refuses unrelated collisions.
 - Writes one clear-view timestamp under `~/.local/state/yamaha-mg-xu-compat/`; it never deletes the system journal.
 - Refuses to overwrite or remove a unit unless it contains this plugin's ownership marker.
 - Validates the PipeWire source name before placing it in the service definition.
@@ -46,7 +51,7 @@ The plugin runs with your user permissions. It uses no root privileges and depen
 
 ## Usage
 
-If your MG-XU mixer loses sound after a few seconds, click the Yamaha badge and turn the compatibility layer on. Turn it off when the workaround is not needed. Press `T` or Enter to toggle, `R` to refresh, and Escape to close. You can also use:
+If your MG-XU mixer loses sound after a few seconds, click the Yamaha badge or launch **Yamaha MG-XU Compatibility**, then turn the compatibility layer on. Both surfaces use the same controller and `CompatibilityView.qml`, so status, actions, and activity history stay synchronized. Turn it off when the workaround is not needed. Press `T` or Enter to toggle, `L` for activity, `C` to clear the activity view, `R` to refresh, and Escape to close or go back. You can also use:
 
 ```bash
 scripts/status.sh
@@ -55,6 +60,8 @@ scripts/install.sh --dry-run
 scripts/install.sh
 scripts/uninstall.sh --dry-run
 scripts/uninstall.sh
+scripts/install-app.sh
+scripts/uninstall-app.sh
 ```
 
 The capture source is discovered from live PipeWire metadata, so PipeWire naming changes and Yamaha product IDs other than `1703` do not require configuration. If more than one MG-XU capture source is connected, set `YAMAHA_SOURCE` to the exact node name you want to use.
@@ -77,6 +84,7 @@ Turn the compatibility layer off first, then remove the widget:
 
 ```bash
 scripts/uninstall.sh
+scripts/uninstall-app.sh
 omarchy plugin remove io.github.tbogard.yamaha-mg-xu
 ```
 
