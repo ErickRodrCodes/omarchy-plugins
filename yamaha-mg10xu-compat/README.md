@@ -40,7 +40,7 @@ The plugin runs with your user permissions. It uses no root privileges and depen
 - Detects an MG-XU capture node from Yamaha's USB vendor ID (`0499`) and the MG-XU family name; it does not require a particular product ID such as `1703`.
 - Refuses to enable the layer when no matching device is present or when multiple matches make selection ambiguous.
 - Rolls back the installed file if systemd cannot activate the service.
-- Runs `pw-record` with systemd restrictions including `NoNewPrivileges`, protected system/home paths, private devices and temporary files, and Unix-socket-only networking.
+- Runs `pw-record` with `NoNewPrivileges`, realtime and set-user-ID restrictions, a native-only system-call architecture, and a private file-creation mask. Filesystem/device namespace restrictions are intentionally avoided because they can prevent PipeWire client connections on affected systems.
 - Continuously discards capture samples to `/dev/null`; it does not save or transmit them.
 
 ## Usage
