@@ -4,7 +4,7 @@ An Omarchy bar widget by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that los
 
 The workaround runs a user-level service that reads the Yamaha capture source and sends every sample to `/dev/null`. Nothing is recorded, retained, or transmitted.
 
-The Yamaha `Y` badge indicates status: green means the compatibility layer is active, normal foreground means the mixer is detected but the layer is off, and dim means no MG-XU is detected. Left-click opens the panel; right-click toggles the layer directly.
+The Yamaha badge follows the active Omarchy theme: normal foreground means the compatibility layer is active, while the standard dimmed treatment means it is off. Left-click opens the panel; right-click toggles the layer directly.
 
 ## Install
 
@@ -29,6 +29,17 @@ omarchy plugin add https://github.com/tbogard/yamaha-mg10xu-compat.git --enable
 - systemd user services
 
 The plugin runs unsandboxed with your user permissions. It uses no root privileges and depends on `pw-record`, `wpctl`, and a systemd user session. Enabling it installs and starts `~/.config/systemd/user/yamaha-mg10xu-audio-keepalive.service`.
+
+## Safety
+
+- Never runs `sudo`, `pkexec`, a second Quickshell process, or remote code.
+- Never edits packaged files under `/usr/share/omarchy`.
+- Writes only its exact systemd user-unit path and refuses path-like unit names.
+- Refuses to overwrite or remove a unit unless it contains this plugin's ownership marker.
+- Validates the PipeWire source name before placing it in the service definition.
+- Rolls back the installed file if systemd cannot activate the service.
+- Runs `pw-record` with systemd restrictions including `NoNewPrivileges`, protected system/home paths, private devices and temporary files, and Unix-socket-only networking.
+- Continuously discards capture samples to `/dev/null`; it does not save or transmit them.
 
 ## Usage
 

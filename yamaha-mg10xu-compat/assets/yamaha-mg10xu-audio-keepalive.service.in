@@ -1,4 +1,5 @@
 [Unit]
+# Managed by io.github.tbogard.yamaha-mg-xu
 Description=Keep Yamaha MG-XU USB audio clock active
 After=pipewire.service wireplumber.service
 Wants=pipewire.service wireplumber.service
@@ -6,8 +7,23 @@ Wants=pipewire.service wireplumber.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/pw-record --target @YAMAHA_SOURCE@ --rate 48000 --channels 2 --format s16 /dev/null
-Restart=always
+Restart=on-failure
 RestartSec=2
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHome=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictAddressFamilies=AF_UNIX
+RestrictRealtime=true
+RestrictSUIDSGID=true
+SystemCallArchitectures=native
+UMask=0077
 
 [Install]
 WantedBy=default.target

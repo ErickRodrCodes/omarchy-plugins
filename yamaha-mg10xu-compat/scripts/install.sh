@@ -16,14 +16,21 @@ require_command wpctl
 require_command systemctl
 require_command sed
 require_command install
+require_command grep
+require_command cp
+
+root="$(plugin_root)"
+template="$root/assets/yamaha-mg10xu-audio-keepalive.service.in"
+
+if [[ -e "$UNIT_PATH" ]] && ! unit_is_managed; then
+  printf 'Refusing to overwrite unmanaged user unit: %s\n' "$UNIT_PATH" >&2
+  exit 1
+fi
 
 if ! yamaha_present; then
   printf 'Yamaha MG-XU was not found in the current PipeWire graph.\n' >&2
   exit 1
 fi
-
-root="$(plugin_root)"
-template="$root/assets/yamaha-mg10xu-audio-keepalive.service.in"
 
 if $dry_run; then
   printf 'Would install: %s\n' "$UNIT_PATH"
@@ -34,15 +41,26 @@ fi
 
 mkdir -p -- "$USER_UNIT_DIR"
 temporary_unit="$(mktemp "${TMPDIR:-/tmp}/yamaha-mg10xu-unit.XXXXXX")"
-trap 'rm -f -- "$temporary_unit"' EXIT
-sed "s|@YAMAHA_SOURCE@|$YAMAHA_SOURCE|g" "$template" >"$temporary_unit"
+previous_unit="$(mktemp "${TMPDIR:-/tmp}/yamaha-mg10xu-previous.XXXXXX")"
+had_previous=false
+if unit_is_managed; then
+  cp -- "$UNIT_PATH" "$previous_unit"
+  had_previous=true
+fi
+trap 'rm -f -- "$temporary_unit" "$previous_unit"' EXIT
+sed "s|@YAMAHA_SOURCE@|${YAMAHA_SOURCE}|g" "$template" >"$temporary_unit"
 
-# Replace a previous linked development unit cleanly.
-systemctl --user disable --now "$UNIT_NAME" >/dev/null 2>&1 || true
-rm -f -- "$UNIT_PATH"
 install -m 0644 -- "$temporary_unit" "$UNIT_PATH"
-systemctl --user daemon-reload
-systemctl --user enable --now "$UNIT_NAME"
+if ! systemctl --user daemon-reload || ! systemctl --user enable --now "$UNIT_NAME"; then
+  printf 'Failed to activate %s; restoring the previous state.\n' "$UNIT_NAME" >&2
+  if $had_previous; then
+    install -m 0644 -- "$previous_unit" "$UNIT_PATH"
+  else
+    rm -f -- "$UNIT_PATH"
+  fi
+  systemctl --user daemon-reload >/dev/null 2>&1 || true
+  exit 1
+fi
 
 printf 'Installed and started %s\n' "$UNIT_NAME"
 printf 'Microphone samples are discarded to /dev/null and are not saved.\n'
