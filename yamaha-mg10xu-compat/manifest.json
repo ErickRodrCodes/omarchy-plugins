@@ -2,12 +2,15 @@
   "schemaVersion": 1,
   "id": "io.github.tbogard.yamaha-mg-xu",
   "name": "Yamaha MG-XU Compatibility",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Erick Rodriguez",
   "license": "MIT",
   "description": "Turn it on when a Yamaha MG-XU mixer loses playback sound after a few seconds; it keeps the PipeWire capture side active.",
   "kinds": ["service", "bar-widget", "overlay"],
   "keepLoaded": true,
+  "omarchy": {
+    "testedVersion": "4.0.1-1"
+  },
   "entryPoints": {
     "service": "Service.qml",
     "barWidget": "BarWidget.qml",

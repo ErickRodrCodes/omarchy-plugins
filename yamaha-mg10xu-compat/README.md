@@ -28,6 +28,7 @@ The launcher appears as **Yamaha MG-XU Compatibility** in the application menu. 
 
 ## Requirements
 
+- Omarchy `4.0.1-1` (tested version)
 - Yamaha MG10XU/MG-XU visible to PipeWire
 - PipeWire tools (`pw-record`, `pw-dump`, `wpctl`) and `jq`
 - systemd user services
