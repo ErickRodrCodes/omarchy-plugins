@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.tbogard.yamaha-mg-xu",
+  "name": "Yamaha MG-XU Compatibility",
+  "version": "1.0.0",
+  "author": "Erick Rodriguez",
+  "license": "MIT",
+  "description": "Shows Yamaha MG-XU compatibility status and toggles the PipeWire capture keepalive from the Omarchy bar.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Yamaha MG-XU",
+    "description": "MG-XU detection and playback-stall compatibility toggle.",
+    "category": "Audio",
+    "aliases": ["yamaha", "mg10xu", "mg-xu", "audio-keepalive"],
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

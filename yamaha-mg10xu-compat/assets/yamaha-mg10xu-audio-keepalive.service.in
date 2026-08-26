@@ -1,0 +1,13 @@
+[Unit]
+Description=Keep Yamaha MG-XU USB audio clock active
+After=pipewire.service wireplumber.service
+Wants=pipewire.service wireplumber.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/pw-record --target @YAMAHA_SOURCE@ --rate 48000 --channels 2 --format s16 /dev/null
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
