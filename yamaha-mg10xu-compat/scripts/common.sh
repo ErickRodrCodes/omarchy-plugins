@@ -3,11 +3,11 @@
 set -euo pipefail
 
 readonly DEFAULT_UNIT_NAME="yamaha-mg10xu-audio-keepalive.service"
-readonly DEFAULT_YAMAHA_SOURCE="alsa_input.usb-Yamaha_Corporation_MG-XU-00.analog-stereo"
 readonly MANAGED_UNIT_MARKER="# Managed by io.github.tbogard.yamaha-mg-xu"
+readonly YAMAHA_USB_VENDOR_ID="0499"
 
 UNIT_NAME="${UNIT_NAME:-$DEFAULT_UNIT_NAME}"
-YAMAHA_SOURCE="${YAMAHA_SOURCE:-$DEFAULT_YAMAHA_SOURCE}"
+YAMAHA_SOURCE="${YAMAHA_SOURCE:-}"
 USER_UNIT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/systemd/user"
 UNIT_PATH="$USER_UNIT_DIR/$UNIT_NAME"
 
@@ -16,7 +16,7 @@ validate_configuration() {
     printf 'Invalid UNIT_NAME: expected a systemd service basename.\n' >&2
     exit 2
   fi
-  if [[ ! "$YAMAHA_SOURCE" =~ ^[A-Za-z0-9_.:@-]+$ ]]; then
+  if [[ -n "$YAMAHA_SOURCE" && ! "$YAMAHA_SOURCE" =~ ^[A-Za-z0-9_.:@-]+$ ]]; then
     printf 'Invalid YAMAHA_SOURCE: unsupported characters in PipeWire node name.\n' >&2
     exit 2
   fi
@@ -41,8 +41,47 @@ unit_is_managed() {
   [[ -f "$UNIT_PATH" ]] && grep -Fxq "$MANAGED_UNIT_MARKER" "$UNIT_PATH"
 }
 
+discover_yamaha_sources() {
+  pw-dump 2>/dev/null | jq -r --arg vendor "USB${YAMAHA_USB_VENDOR_ID}:" '
+    .[]
+    | select(.type == "PipeWire:Interface:Node")
+    | (.info.props // {})
+    | select(.["media.class"] == "Audio/Source")
+    | select((.["alsa.components"] // "") | ascii_upcase | startswith($vendor))
+    | select(
+        [.["alsa.card_name"], .["alsa.long_card_name"], .["node.description"], .["node.nick"]]
+        | map(. // "")
+        | join(" ")
+        | test("MG[ _-]*([0-9]+[ _-]*)?XU"; "i")
+      )
+    | .["node.name"] // empty
+  '
+}
+
+resolve_yamaha_source() {
+  if [[ -n "$YAMAHA_SOURCE" ]]; then
+    printf '%s\n' "$YAMAHA_SOURCE"
+    return 0
+  fi
+
+  local -a sources=()
+  mapfile -t sources < <(discover_yamaha_sources)
+  case "${#sources[@]}" in
+    0)
+      return 1
+      ;;
+    1)
+      printf '%s\n' "${sources[0]}"
+      ;;
+    *)
+      printf 'Multiple Yamaha MG-XU capture sources were found; set YAMAHA_SOURCE explicitly.\n' >&2
+      return 2
+      ;;
+  esac
+}
+
 yamaha_present() {
-  wpctl status 2>/dev/null | grep -Fq 'MG-XU'
+  resolve_yamaha_source >/dev/null
 }
 
 validate_configuration

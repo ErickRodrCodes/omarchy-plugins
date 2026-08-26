@@ -54,7 +54,7 @@ Panel {
         PanelHero {
           width: parent.width
           title: "Yamaha MG-XU"
-          meta: root.active ? "Compatibility layer active" : (root.detected ? "Compatibility layer off" : "Mixer not detected")
+          meta: root.active ? "Compatibility layer active" : (root.detected ? "Compatibility layer off" : "No device found")
           foreground: root.foreground
           iconOpacity: root.active ? 1.0 : 0.5
           iconComponent: Component {

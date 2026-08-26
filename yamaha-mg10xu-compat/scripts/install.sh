@@ -13,6 +13,8 @@ fi
 
 require_command pw-record
 require_command wpctl
+require_command pw-dump
+require_command jq
 require_command systemctl
 require_command sed
 require_command install
@@ -27,14 +29,19 @@ if [[ -e "$UNIT_PATH" ]] && ! unit_is_managed; then
   exit 1
 fi
 
-if ! yamaha_present; then
-  printf 'Yamaha MG-XU was not found in the current PipeWire graph.\n' >&2
-  exit 1
+if resolved_source="$(resolve_yamaha_source)"; then
+  :
+else
+  resolve_status=$?
+  if [[ $resolve_status -eq 1 ]]; then
+    printf 'No Yamaha MG-XU device was found in the current PipeWire graph.\n' >&2
+  fi
+  exit "$resolve_status"
 fi
 
 if $dry_run; then
   printf 'Would install: %s\n' "$UNIT_PATH"
-  printf 'Capture source: %s\n' "$YAMAHA_SOURCE"
+  printf 'Capture source: %s\n' "$resolved_source"
   printf 'No changes made.\n'
   exit 0
 fi
@@ -48,7 +55,7 @@ if unit_is_managed; then
   had_previous=true
 fi
 trap 'rm -f -- "$temporary_unit" "$previous_unit"' EXIT
-sed "s|@YAMAHA_SOURCE@|${YAMAHA_SOURCE}|g" "$template" >"$temporary_unit"
+sed "s|@YAMAHA_SOURCE@|${resolved_source}|g" "$template" >"$temporary_unit"
 
 install -m 0644 -- "$temporary_unit" "$UNIT_PATH"
 if ! systemctl --user daemon-reload || ! systemctl --user enable --now "$UNIT_NAME"; then

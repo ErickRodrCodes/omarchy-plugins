@@ -4,6 +4,8 @@ set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
 
 require_command wpctl
+require_command pw-dump
+require_command jq
 require_command systemctl
 
 machine=false
@@ -17,14 +19,25 @@ fi
 detected=no
 enabled=no
 active=no
-yamaha_present && detected=yes
+source_name=""
+source_error=""
+if source_name="$(resolve_yamaha_source)"; then
+  detected=yes
+else
+  resolve_status=$?
+  if [[ $resolve_status -eq 2 ]]; then
+    source_error="Multiple Yamaha MG-XU devices found; set YAMAHA_SOURCE"
+  fi
+fi
 systemctl --user is-enabled "$UNIT_NAME" >/dev/null 2>&1 && enabled=yes
 systemctl --user is-active "$UNIT_NAME" >/dev/null 2>&1 && active=yes
 
 if $machine; then
-  printf 'detected=%s\nenabled=%s\nactive=%s\n' "$detected" "$enabled" "$active"
-  if [[ "$detected" == no ]]; then
-    printf 'message=Mixer not detected in the current PipeWire graph\n'
+  printf 'detected=%s\nenabled=%s\nactive=%s\nsource=%s\n' "$detected" "$enabled" "$active" "$source_name"
+  if [[ -n "$source_error" ]]; then
+    printf 'message=%s\n' "$source_error"
+  elif [[ "$detected" == no ]]; then
+    printf 'message=No Yamaha MG-XU device found\n'
   elif [[ "$active" == yes ]]; then
     printf 'message=Compatibility layer is active\n'
   else
@@ -36,7 +49,11 @@ fi
 if [[ "$detected" == yes ]]; then
   printf 'Yamaha MG-XU: detected\n'
 else
-  printf 'Yamaha MG-XU: not detected\n'
+  printf 'Yamaha MG-XU: no device found\n'
+fi
+
+if [[ -n "$source_name" ]]; then
+  printf 'Capture source: %s\n' "$source_name"
 fi
 
 if [[ "$enabled" == yes ]]; then

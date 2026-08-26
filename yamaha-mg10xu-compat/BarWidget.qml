@@ -113,7 +113,7 @@ BarWidget {
     }
     tooltipText: root.active
       ? "Yamaha MG-XU: compatibility on"
-      : (root.detected ? "Turn on if your MG-XU loses sound after a few seconds" : "Yamaha MG-XU: not detected")
+      : (root.detected ? "Turn on if your MG-XU loses sound after a few seconds" : "Yamaha MG-XU: no device found")
     onPressed: function(buttonCode) {
       if (buttonCode === Qt.RightButton) root.setCompatibility(!root.active)
       else root.toggle()

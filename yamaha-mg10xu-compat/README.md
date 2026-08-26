@@ -25,10 +25,10 @@ omarchy plugin add https://github.com/tbogard/yamaha-mg10xu-compat.git --enable
 ## Requirements
 
 - Yamaha MG10XU/MG-XU visible to PipeWire
-- PipeWire tools (`pw-record`, `wpctl`)
+- PipeWire tools (`pw-record`, `pw-dump`, `wpctl`) and `jq`
 - systemd user services
 
-The plugin runs unsandboxed with your user permissions. It uses no root privileges and depends on `pw-record`, `wpctl`, and a systemd user session. Enabling it installs and starts `~/.config/systemd/user/yamaha-mg10xu-audio-keepalive.service`.
+The plugin runs with your user permissions. It uses no root privileges and depends on `pw-record`, `pw-dump`, `wpctl`, `jq`, and a systemd user session. Enabling it installs and starts `~/.config/systemd/user/yamaha-mg10xu-audio-keepalive.service`.
 
 ## Safety
 
@@ -37,6 +37,8 @@ The plugin runs unsandboxed with your user permissions. It uses no root privileg
 - Writes only its exact systemd user-unit path and refuses path-like unit names.
 - Refuses to overwrite or remove a unit unless it contains this plugin's ownership marker.
 - Validates the PipeWire source name before placing it in the service definition.
+- Detects an MG-XU capture node from Yamaha's USB vendor ID (`0499`) and the MG-XU family name; it does not require a particular product ID such as `1703`.
+- Refuses to enable the layer when no matching device is present or when multiple matches make selection ambiguous.
 - Rolls back the installed file if systemd cannot activate the service.
 - Runs `pw-record` with systemd restrictions including `NoNewPrivileges`, protected system/home paths, private devices and temporary files, and Unix-socket-only networking.
 - Continuously discards capture samples to `/dev/null`; it does not save or transmit them.
@@ -53,7 +55,7 @@ scripts/uninstall.sh --dry-run
 scripts/uninstall.sh
 ```
 
-Set `YAMAHA_SOURCE` if the PipeWire source name differs from the default.
+The capture source is discovered from live PipeWire metadata, so PipeWire naming changes and Yamaha product IDs other than `1703` do not require configuration. If more than one MG-XU capture source is connected, set `YAMAHA_SOURCE` to the exact node name you want to use.
 
 ## How it works
 
@@ -64,6 +66,7 @@ Omarchy's audio panel creates a `PwNodePeakMonitor` for the default input while 
 ```bash
 omarchy plugin validate .
 qmllint -I "$OMARCHY_PATH/shell" BarWidget.qml Panel.qml
+tests/detection.sh
 ```
 
 ## Remove

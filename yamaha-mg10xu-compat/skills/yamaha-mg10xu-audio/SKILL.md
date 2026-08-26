@@ -11,7 +11,7 @@ Use the bundled scripts to diagnose and manage the workaround. Do not assume eve
 
 Run `scripts/status.sh` from the plugin root. The workaround applies when:
 
-- USB device `0499:1703` or PipeWire device `MG-XU` is present.
+- A PipeWire capture node has Yamaha's USB vendor ID (`0499`) and an MG-XU family label. Do not require product ID `1703`; it may vary by model or revision.
 - Playback becomes silent although the sink remains running and unmuted.
 - Playback returns while an application holds the MG-XU capture source open, such as Omarchy's audio-panel peak monitor.
 
@@ -41,4 +41,4 @@ Removal stops and disables only `yamaha-mg10xu-audio-keepalive.service` and dele
 
 ## Overrides
 
-The scripts accept `YAMAHA_SOURCE` to support another stable PipeWire source name and `UNIT_NAME` to avoid a local unit-name collision. Preserve the defaults for an ordinary MG10XU.
+The scripts discover the capture source from PipeWire metadata. They accept `YAMAHA_SOURCE` to choose an exact node when multiple MG-XU mixers are connected, and `UNIT_NAME` to avoid a local unit-name collision. Preserve automatic source discovery for an ordinary single-device setup.
