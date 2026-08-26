@@ -51,6 +51,8 @@ Panel {
         if ((t === "l" || t === "L") && root.hostWidget) {
           root.showingActivity = true
           root.hostWidget.refreshActivity()
+        } else if ((t === "c" || t === "C") && root.showingActivity && root.hostWidget) {
+          root.hostWidget.clearActivity()
         } else if ((t === "t" || t === "T") && root.detected && root.hostWidget)
           root.hostWidget.setCompatibility(!root.active)
         else if ((t === "r" || t === "R") && root.hostWidget) {
@@ -208,7 +210,7 @@ Panel {
 
         Text {
           width: parent.width
-          text: root.hostWidget && root.hostWidget.activityBusy ? "Refreshing…" : "Press Enter or R to refresh"
+          text: root.hostWidget && root.hostWidget.activityBusy ? "Working…" : "Enter or R refreshes · C clears · Esc returns"
           color: root.dim
           font.family: root.bar ? root.bar.fontFamily : Style.font.family
           font.pixelSize: Style.font.caption

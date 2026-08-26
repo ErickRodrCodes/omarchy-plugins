@@ -4,7 +4,7 @@ An Omarchy bar widget by Erick Rodriguez for Yamaha MG10XU/MG-XU mixers that los
 
 The workaround runs a user-level service that reads the Yamaha capture source and sends every sample to `/dev/null`. Nothing is recorded, retained, or transmitted.
 
-The Yamaha badge follows the active Omarchy theme: normal foreground means the compatibility layer is active, while the standard dimmed treatment means it is off. Left-click opens the panel; right-click toggles the layer directly. The panel's Activity log subpanel shows recent service starts, stops, restarts, and errors from the systemd user journal.
+The Yamaha badge follows the active Omarchy theme: normal foreground means the compatibility layer is active, while the standard dimmed treatment means it is off. Left-click opens the panel; right-click has no action, preventing accidental activation. The panel's Activity log subpanel shows recent service starts, stops, restarts, and errors from the systemd user journal.
 
 ## Install
 
@@ -35,6 +35,7 @@ The plugin runs with your user permissions. It uses no root privileges and depen
 - Never runs `sudo`, `pkexec`, a second Quickshell process, or remote code.
 - Never edits packaged files under `/usr/share/omarchy`.
 - Writes only its exact systemd user-unit path and refuses path-like unit names.
+- Writes one clear-view timestamp under `~/.local/state/yamaha-mg-xu-compat/`; it never deletes the system journal.
 - Refuses to overwrite or remove a unit unless it contains this plugin's ownership marker.
 - Validates the PipeWire source name before placing it in the service definition.
 - Detects an MG-XU capture node from Yamaha's USB vendor ID (`0499`) and the MG-XU family name; it does not require a particular product ID such as `1703`.
@@ -78,5 +79,7 @@ Turn the compatibility layer off first, then remove the widget:
 scripts/uninstall.sh
 omarchy plugin remove io.github.tbogard.yamaha-mg-xu
 ```
+
+Press `C` in the Activity log to clear its view. This records a timestamp in `~/.local/state/yamaha-mg-xu-compat/activity-cleared-at`; it does not delete entries from the shared system journal.
 
 The plugin never edits `/usr/share/omarchy`.

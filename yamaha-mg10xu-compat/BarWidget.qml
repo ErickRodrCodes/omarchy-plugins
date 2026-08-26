@@ -69,6 +69,13 @@ BarWidget {
     activityProcess.running = true
   }
 
+  function clearActivity() {
+    if (activityProcess.running) return
+    activityBusy = true
+    activityProcess.command = [pluginDir + "/scripts/activity-log.sh", "--clear"]
+    activityProcess.running = true
+  }
+
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
   onBarChanged: injectPanel()
@@ -143,8 +150,7 @@ BarWidget {
       ? "Yamaha MG-XU: compatibility on"
       : (root.detected ? "Turn on if your MG-XU loses sound after a few seconds" : "Yamaha MG-XU: no device found")
     onPressed: function(buttonCode) {
-      if (buttonCode === Qt.RightButton) root.setCompatibility(!root.active)
-      else root.toggle()
+      if (buttonCode === Qt.LeftButton) root.toggle()
     }
   }
 }
