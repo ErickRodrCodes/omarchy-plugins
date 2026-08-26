@@ -143,6 +143,15 @@ Panel {
             }
           }
         }
+
+        Text {
+          width: parent.width
+          text: "Click Activity log or press L to open it · T toggles · R refreshes · Esc closes"
+          color: root.dim
+          font.family: root.bar ? root.bar.fontFamily : Style.font.family
+          font.pixelSize: Style.font.caption
+          wrapMode: Text.WordWrap
+        }
       }
 
       Column {
