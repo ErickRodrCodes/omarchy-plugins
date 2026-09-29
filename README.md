@@ -8,7 +8,7 @@ A catalog of Omarchy shell integrations by Erick Rodriguez. Each published plugi
 
 | Plugin | Version | Tested Omarchy | Changelog | Description |
 | --- | --- | --- | --- | --- |
-| Horizon Display Layout (unpublished) | `0.1.0` | `4.0.1-1` | [Changelog](changelogs/horizon-display-layout.md) | Keep Omnissa Horizon's XWayland monitor layout aligned with the user's Hyprland display positions. |
+| [Horizon Display Layout](https://github.com/ErickRodrCodes/horizon-display-layout) | `0.1.0` | `4.0.1-1` | [Changelog](https://github.com/ErickRodrCodes/horizon-display-layout/blob/main/CHANGELOG.md) | Keep Omnissa Horizon's XWayland monitor layout aligned with the user's Hyprland display positions. |
 | [Horizon Screens](https://github.com/ErickRodrCodes/horizon-screens) | `1.1.0` | `4.0.1-1` | [Changelog](https://github.com/ErickRodrCodes/horizon-screens/blob/main/CHANGELOG.md) | Align Horizon screens and mouse boundaries with the current Hyprland display arrangement. |
 | [Litra Beam for Omarchy](https://github.com/ErickRodrCodes/litra-beam-for-omarchy) | `0.1.0` | `4.0.1-1` | [Changelog](https://github.com/ErickRodrCodes/litra-beam-for-omarchy/blob/main/CHANGELOG.md) | Control one or many Logitech Litra Beam lights over USB or Bluetooth, independently or in sync. |
 | RGB-Fireblade for Omarchy (unpublished) | `0.1.0` | `4.0.1-1` | [Changelog](changelogs/rbg-fireblade.md) | Theme-aware RGB controls for Omarchy, beginning with the active theme accent color. |
@@ -19,7 +19,7 @@ A catalog of Omarchy shell integrations by Erick Rodriguez. Each published plugi
 
 Plugin versions come from each repository's `manifest.json` on `main`; they do not imply a tagged release. Tested Omarchy is the version recorded by the plugin author, not a guarantee of compatibility with newer versions.
 
-Horizon Display Layout and RGB-Fireblade are currently unpublished local projects. Their baseline changelogs are included here until standalone repositories are available.
+RGB-Fireblade is currently an unpublished local project. Its baseline changelog is included here until a standalone repository is available.
 
 ## Keeping the catalog current
 

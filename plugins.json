@@ -2,10 +2,9 @@
   {
     "id": "io.github.tbogard.horizon-display-layout",
     "name": "Horizon Display Layout",
-    "repository": null,
+    "repository": "ErickRodrCodes/horizon-display-layout",
     "version": "0.1.0",
     "omarchy": "4.0.1-1",
-    "changelog": "changelogs/horizon-display-layout.md",
     "description": "Keep Omnissa Horizon's XWayland monitor layout aligned with the user's Hyprland display positions."
   },
   {
