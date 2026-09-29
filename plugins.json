@@ -1,0 +1,52 @@
+[
+  {
+    "id": "io.github.tbogard.horizon-display-layout",
+    "name": "Horizon Display Layout",
+    "repository": null,
+    "version": "0.1.0",
+    "omarchy": "4.0.1-1",
+    "changelog": "changelogs/horizon-display-layout.md",
+    "description": "Keep Omnissa Horizon's XWayland monitor layout aligned with the user's Hyprland display positions."
+  },
+  {
+    "id": "io.github.tbogard.horizon-screens",
+    "name": "Horizon Screens",
+    "repository": "ErickRodrCodes/horizon-screens",
+    "version": "1.1.0",
+    "omarchy": "4.0.1-1",
+    "description": "Align Horizon screens and mouse boundaries with the current Hyprland display arrangement."
+  },
+  {
+    "id": "io.github.tbogard.litra-lights",
+    "name": "Litra Beam for Omarchy",
+    "repository": "ErickRodrCodes/litra-beam-for-omarchy",
+    "version": "0.1.0",
+    "omarchy": "4.0.1-1",
+    "description": "Control one or many Logitech Litra Beam lights over USB or Bluetooth, independently or in sync."
+  },
+  {
+    "id": "io.github.tbogard.rgb-fireblade",
+    "name": "RGB-Fireblade for Omarchy",
+    "repository": null,
+    "version": "0.1.0",
+    "omarchy": "4.0.1-1",
+    "changelog": "changelogs/rbg-fireblade.md",
+    "description": "Theme-aware RGB controls for Omarchy, beginning with the active theme accent color."
+  },
+  {
+    "id": "io.github.tbogard.virtualization-input-mode",
+    "name": "Virtualization Input Mode",
+    "repository": "ErickRodrCodes/virtualization-input-mode",
+    "version": "0.2.0",
+    "omarchy": "4.0.1-1",
+    "description": "Pass Omarchy desktop shortcuts through to virtual machines, VDIs, and remote desktop clients."
+  },
+  {
+    "id": "io.github.tbogard.yamaha-mg-xu",
+    "name": "Yamaha MG-XU Compatibility",
+    "repository": "ErickRodrCodes/yamaha-mg10xu-compat",
+    "version": "1.1.1",
+    "omarchy": "4.0.1-1",
+    "description": "Turn it on when a Yamaha MG-XU mixer loses playback sound after a few seconds; it keeps the PipeWire capture side active."
+  }
+]
