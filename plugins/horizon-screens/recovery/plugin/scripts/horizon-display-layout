@@ -1,0 +1,159 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+plugin_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/horizon-display-layout"
+shim_file="$state_dir/libhorizon-display-layout.so"
+log_file="$state_dir/activity.log"
+
+log_event() {
+  mkdir -p "$state_dir"
+  printf '%s  %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >> "$log_file"
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || {
+    printf 'Missing required command: %s\n' "$1" >&2
+    exit 2
+  }
+}
+
+build_shim() {
+  require_command cc
+  mkdir -p "$state_dir"
+  if [[ ! -f "$shim_file" || "$plugin_dir/src/horizon-display-layout.c" -nt "$shim_file" ]]; then
+    cc -shared -fPIC -O2 -Wall -Wextra \
+      -o "$shim_file" "$plugin_dir/src/horizon-display-layout.c" -ldl
+    log_event "setup: compatibility library built"
+  fi
+  echo "Horizon display layout compatibility is ready."
+}
+
+desired_layout() {
+  hyprctl -j monitors all | jq -r '
+    map(select(.disabled == false)) as $monitors
+    | ($monitors | map(.x) | min) as $min_x
+    | ($monitors | map(.y) | min) as $min_y
+    | $monitors[]
+    | [.name, (.x - $min_x), (.y - $min_y), .width, .height]
+    | @tsv
+  '
+}
+
+# Xinerama screen indices follow XWayland's connector enumeration. Construct
+# replacement coordinates in the same order, including duplicate resolutions.
+layout_environment() {
+  require_command python3
+  python3 "$plugin_dir/scripts/layout_model.py"
+}
+
+prepare_horizon() {
+  require_command hyprctl
+  require_command jq
+  require_command xrandr
+  require_command horizon-client
+  local layout
+  # Once XWayland itself agrees, use Horizon's native geometry/input APIs.
+  # Remove only this wrapper's inherited override; preserve unrelated preloads.
+  local filtered_preload="" entry inherited_preload="${LD_PRELOAD:-}"
+  for entry in ${inherited_preload//:/ }; do
+    [[ "$entry" == "$shim_file" ]] && continue
+    filtered_preload+="${filtered_preload:+:}$entry"
+  done
+  unset HORIZON_DISPLAY_LAYOUT LD_PRELOAD
+  [[ -z "$filtered_preload" ]] || export LD_PRELOAD="$filtered_preload"
+  layout="$(layout_environment)"
+  if awk -F '[,;]' '{for(i=1;i<=NF;i+=8) for(j=0;j<4;j++) if($(i+j)!=$(i+j+4)) exit 1}' <<< "$layout"; then
+    log_event "launch: native XWayland geometry agrees; no Horizon override"
+  else
+    build_shim >/dev/null
+    log_event "launch: legacy Xinerama override (input mapping not repaired)=$layout"
+    export HORIZON_DISPLAY_LAYOUT="$layout"
+    export LD_PRELOAD="$shim_file${LD_PRELOAD:+:$LD_PRELOAD}"
+  fi
+  export HORIZON_LAYOUT_SIGNATURE
+  HORIZON_LAYOUT_SIGNATURE="$(python3 "$plugin_dir/scripts/layout_model.py" --signature)"
+  export GDK_SCALE="${GDK_SCALE:-1}"
+}
+
+run_horizon() {
+  prepare_horizon
+  exec horizon-client "$@"
+}
+
+status_report() {
+  local desired raw
+  desired="$(desired_layout | sort -t $'\t' -k2,2n -k3,3n | awk -F '\t' '{printf "%s%s (%s,%s) %sx%s", separator, $1, $2, $3, $4, $5; separator=" -> "}')"
+  raw="$(xrandr --query | awk '
+    $2 == "connected" {
+      for (field = 3; field <= NF; field++)
+        if ($field ~ /^[0-9]+x[0-9]+\+[0-9]+\+[0-9]+/) {
+          geometry = $field
+          gsub(/x|\+/, " ", geometry)
+          split(geometry, part, " ")
+          printf "%s%s (%s,%s) %sx%s", separator, $1, part[3], part[4], part[1], part[2]
+          separator=" -> "
+          break
+        }
+    }
+  ')"
+  printf 'Hyprland preference:\n%s\n\nHorizon without fix:\n%s\n' "$desired" "$raw"
+}
+
+verify_fix() {
+  local output actual expected
+  prepare_horizon
+  output="$(horizon-client --monitors-list 2>&1)"
+  actual="$(sed -n '/Monitors used for desktops/{n; :again; /Monitors used for apps/q; /^$/q; p; n; b again}' <<< "$output")"
+  expected="$(desired_layout | sort -t $'\t' -k2,2n -k3,3n | awk -F '\t' '{printf "%d: (%s, %s) %sx%s\n", NR, $2, $3, $4, $5}')"
+
+  local actual_rectangles expected_rectangles
+  actual_rectangles="$(sed -E 's/^[0-9]+: //' <<< "$actual" | sort)"
+  expected_rectangles="$(sed -E 's/^[0-9]+: //' <<< "$expected" | sort)"
+  if [[ "$actual_rectangles" == "$expected_rectangles" ]]; then
+    log_event "verify: PASSED"
+    printf 'VERIFIED — Horizon matches Hyprland\n%s\n' "$actual"
+  else
+    log_event "verify: FAILED"
+    printf 'NOT VERIFIED\nExpected:\n%s\nHorizon reported:\n%s\n' "$expected" "$actual" >&2
+    return 1
+  fi
+}
+
+case "${1:-}" in
+  setup)
+    build_shim
+    ;;
+  launch)
+    shift
+    run_horizon "$@"
+    ;;
+  monitors)
+    shift
+    run_horizon --monitors-list "$@"
+    ;;
+  layout)
+    require_command hyprctl
+    require_command jq
+    require_command xrandr
+    layout_environment
+    ;;
+  status)
+    require_command hyprctl
+    require_command jq
+    require_command xrandr
+    status_report
+    ;;
+  verify)
+    verify_fix
+    ;;
+  log)
+    if [[ -f "$log_file" ]]; then tail -n 40 "$log_file"
+    else echo "No compatibility events yet."
+    fi
+    ;;
+  *)
+    echo "Usage: horizon-display-layout {setup|launch [args...]|monitors|layout|status|verify|log}" >&2
+    exit 2
+    ;;
+esac

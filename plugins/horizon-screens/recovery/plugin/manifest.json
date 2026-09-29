@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.tbogard.horizon-display-layout",
+  "name": "Horizon Display Layout",
+  "version": "0.1.0",
+  "author": "Erick Rodriguez",
+  "license": "MIT",
+  "description": "Keep Omnissa Horizon's XWayland monitor layout aligned with the user's Hyprland display positions.",
+  "kinds": ["service", "bar-widget"],
+  "keepLoaded": true,
+  "omarchy": {
+    "testedVersion": "4.0.1-1"
+  },
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Horizon Display Layout",
+    "description": "Synchronize Horizon's XWayland monitor positions with Hyprland.",
+    "category": "System",
+    "aliases": ["horizon", "omnissa", "vdi", "display", "monitor", "xrandr", "xwayland"],
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

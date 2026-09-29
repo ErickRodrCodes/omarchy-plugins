@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.tbogard.horizon-screens",
+  "name": "Horizon Screens",
+  "version": "1.1.0",
+  "author": "Erick Rodriguez",
+  "license": "MIT",
+  "description": "Align Horizon screens and mouse boundaries with the current Hyprland display arrangement.",
+  "kinds": [
+    "service",
+    "bar-widget"
+  ],
+  "keepLoaded": true,
+  "omarchy": {
+    "testedVersion": "4.0.1-1"
+  },
+  "entryPoints": {
+    "service": "Service.qml",
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Horizon Screens",
+    "description": "Check screens, align the running desktop, or repair the launch fix.",
+    "category": "System",
+    "aliases": [
+      "horizon",
+      "omnissa",
+      "vdi",
+      "display",
+      "monitor",
+      "xrandr",
+      "xwayland"
+    ],
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
