@@ -19,8 +19,8 @@
     "id": "io.github.tbogard.litra-lights",
     "name": "Litra Beam for Omarchy",
     "repository": "ErickRodrCodes/litra-beam-for-omarchy",
-    "version": "0.1.0",
-    "omarchy": "4.0.1-1",
+    "version": "0.1.1",
+    "omarchy": "4.5.0-3",
     "description": "Control one or many Logitech Litra Beam lights over USB or Bluetooth, independently or in sync."
   },
   {
